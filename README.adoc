@@ -1,0 +1,132 @@
+= Antora Xref Extension
+:url-antora-docs: https://docs.antora.org/antora/latest/
+:url-extension-docs: https://docs.antora.org/antora/latest/extend/extensions/
+
+The Antora Xref Extension augments Antora to improve xref macro handling.
+
+WARNING: This is ALPHA software!
+That means the extension is experimental and likely to change at any time without notice.
+You're welcome to test it and give feedback, but take caution when relying on it in a production site.
+
+
+
+== Overview
+The Antora Xref Extension augments Antora's support for xref macros with the following features:
+
+* Validate that the target file contains an anchor that matches the fragment.
+* Use default link text from the title or `reftext` of the target.
+* Stub links that don't yet exist
+* Produce warnings if link text is unnecessary 
+
+NOTE: This extension will slightly increase build times since `.adoc` files are parsed twice.
+
+
+
+== Prerequisites
+In order to use this extension, you must be using Node.js 16 and {url-antora-docs}[Antora 3.1.0].
+The following instructions assume you've already set up an Antora playbook file (i.e., _antora-playbook.yml_) to build your site.
+
+To learn about using extensions with Antora, see the {url-extension-docs}[Antora extension documentation].
+
+
+
+== Install
+Use the following command to install the extension into your playbook project:
+
+[,console]
+----
+$ npm i @springio/antora-xref-extension
+----
+
+
+
+== Register
+Open your Antora playbook file and register the extension as an entry in the `antora.extensions` key.
+If this key doesn't yet exist in your playbook, first create it.
+
+.antora-playbook.yml
+[,yaml]
+----
+antora:
+  extensions:
+  - require: '@springio/antora-xref-extension'
+----
+
+
+
+== Configure
+By default no configuration is required to use the extension.
+Once the extension has been registered macros of the form `+++xref:version@component:module:file.adoc#fragment[]+++` will:
+
+* Be validated to ensure the target file contains an anchor that matches the fragment.
+* Use default link text from the title or `reftext` of the target.
+
+Additional configuration is only required for the additional features listed below.
+
+
+
+=== Stubbed References
+In some situations you may want to build an Antora content source that includes reference to sources that won't be built until later.
+
+For example, you may publish a complete docs site that aggregates several sources, but also want to be able to build those individual sources independently in order to catch errors early.
+In these situations it can be useful to defer errors and use stubbed links so that an individual build can run.
+
+In order to stub xrefs you can provide regular expression patterns in the `stub` extension configuration.
+Any `xref` that matches the pattern will be replaced replaced with a link to the source document that defines it.
+
+NOTE: If the xref doesn't include link text then the full reference will be used as a placeholder.
+
+The following example shows how any xref patterns that reference `missingmodule` can be stubbed:
+
+.antora-playbook.yml
+[,yaml]
+----
+antora:
+  extensions:
+  - require: '@springio/antora-xref-extension'
+    stub:
+    - 'missingmodule:.*'
+----
+
+
+
+=== Xref Text Warnings
+If you have an existing document that uses fragment based xrefs, it's likely that the link text will also be specified.
+This is necessary with a stock Antora installation because without the link text the URL of the published target page is displayed.
+
+Since this extension can deduce the text to use for fragment links, you may want to simplify your markup.
+
+For example, with the following files:
+
+.welcome.adoc
+[,asciidoc]
+----
+= Welcome
+
+Hello
+
+[[getting-started]]
+== Getting Started
+...
+----
+
+.details.adoc
+[,asciidoc]
+----
+= Details
+For details see xref:welcome.adoc#getting-started[Getting Started] for details.
+----
+
+The `+++xref:welcome.adoc#getting-started[Getting Started]+++` link can be simplified to `+++xref:welcome.adoc#getting-started[]+++`.
+
+To help catch links that can be simplified, you can configure the extension to log warnings when it finds unnecessary link text:
+
+.antora-playbook.yml
+[,yaml]
+----
+antora:
+  extensions:
+  - require: '@springio/antora-xref-extension'
+    log-unnecessary-link-text-warnings: true
+----
+

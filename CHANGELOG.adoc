@@ -1,0 +1,10 @@
+:url-repo: https://github.com/spring-io/antora-xref-extension
+= Antora Xref Extension Changelog
+This is a summary of all notable changes to the Antora Xref Extension by release.
+For a detailed view of what's changed, refer to the {url-repo}/commits[commit history] of this project.
+
+
+
+== Unreleased
+
+_Initial prerelease of the software._

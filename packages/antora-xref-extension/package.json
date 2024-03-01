@@ -1,0 +1,34 @@
+{
+    "name": "@springio/antora-xref-extension",
+    "version": "1.0.0-alpha.0",
+    "description": "An Antora extension to improve xref support.",
+    "license": "Apache-2.0",
+    "author": "Spring (https://spring.io)",
+    "contributors": [
+        "Phillip Webb <phil.webb@broadcom.com>"
+    ],
+    "homepage": "github:/spring-io/antora-xref-extension",
+    "repository": "github:/spring-io/antora-xref-extension",
+    "bugs": {
+        "url": "https://github.com/spring-io/antora-xref-extension/issues"
+    },
+    "main": "lib/index.js",
+    "exports": {
+        ".": "./lib/index.js"
+    },
+    "files": [
+        "lib"
+    ],
+    "engines": {
+        "node": ">=16.0.0"
+    },
+    "dependencies": {},
+    "devDependencies": {},
+    "keywords": [
+        "antora",
+        "antora-extension",
+        "asciidoc",
+        "asciidoctor",
+        "documentation"
+    ]
+}

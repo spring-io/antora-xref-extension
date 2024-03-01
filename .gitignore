@@ -1,0 +1,9 @@
+/.cache/
+/.idea/
+/.nyc_output/
+/build/
+/node_modules/
+/packages/*/node_modules/
+/reports/
+/packages/xref-collector-extension/test/work/
+/.vscode/
