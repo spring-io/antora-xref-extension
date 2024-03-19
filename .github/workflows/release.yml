@@ -18,7 +18,7 @@ jobs:
     - name: Install Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16'
+        node-version: '20'
     - name: Set up release environment
       run: |
         echo RELEASE_VERSION=${{ github.event.inputs.release-version }} >> $GITHUB_ENV

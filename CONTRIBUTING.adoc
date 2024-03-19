@@ -49,7 +49,7 @@ If the command doesn't report an {url-nodejs-releases}[active LTS version] of No
 We strongly recommend that you use {url-nvm}[nvm] (Node Version Manager) to manage your Node.js installation(s).
 Follow the {url-nvm-install}[nvm installation instructions] to set up nvm on your machine.
 
-Once you've installed nvm, open a new terminal and install Node.js 16 using the following command:
+Once you've installed nvm, open a new terminal and install Node.js 20 using the following command:
 
 [,console]
 ----

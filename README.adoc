@@ -23,7 +23,7 @@ NOTE: This extension will slightly increase build times since `.adoc` files are 
 
 
 == Prerequisites
-In order to use this extension, you must be using Node.js 16 and {url-antora-docs}[Antora 3.1.0].
+In order to use this extension, you must be using Node.js 20 and {url-antora-docs}[Antora 3.1.0].
 The following instructions assume you've already set up an Antora playbook file (i.e., _antora-playbook.yml_) to build your site.
 
 To learn about using extensions with Antora, see the {url-extension-docs}[Antora extension documentation].
