@@ -5,6 +5,6 @@ For a detailed view of what's changed, refer to the {url-repo}/commits[commit hi
 
 
 
-== Unreleased
+== 1.0.0-alpha.1 (2024-03-19)
 
 _Initial prerelease of the software._
