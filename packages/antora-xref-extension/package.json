@@ -8,7 +8,9 @@
         "Phillip Webb <phil.webb@broadcom.com>"
     ],
     "homepage": "github:/spring-io/antora-xref-extension",
-    "repository": "github:/spring-io/antora-xref-extension",
+    "repository": {
+        "url": "github:/spring-io/antora-xref-extension"
+    },
     "bugs": {
         "url": "https://github.com/spring-io/antora-xref-extension/issues"
     },
