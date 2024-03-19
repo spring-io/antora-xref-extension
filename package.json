@@ -15,7 +15,9 @@
     "format": "node npm/format.js packages/${npm_config_package},npm",
     "lint": "eslint \"{docs,npm}/**/*.js\" \"packages/${npm_config_package:-*}/{lib,test}/**/*.js\"",
     "test": "_mocha",
-    "version": "node npm/version.js"
+    "version": "node npm/version.js",
+    "postpublish": "downdoc --postpublish",
+    "prepublishOnly": "downdoc --prepublish"
   },
   "engines": {
     "node": ">=16.0.0"
@@ -46,6 +48,9 @@
   "dependencies": {
     "@antora/asciidoc-loader": "^3.1.7",
     "@antora/content-classifier": "^3.1.7",
-    "@antora/document-converter": "^3.1.7"
+    "@antora/document-converter": "^3.1.7",
+    "downdoc": "^1.0.2-stable",
+    "i": "^0.3.7",
+    "npm": "^10.5.0"
   }
 }
