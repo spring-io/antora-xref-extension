@@ -1,0 +1,10 @@
+= Antora Xref Extension
+
+The Antora Xref Extension augments Antora's support for xref macros with the following features:
+
+* Validate that the target file contains an anchor that matches the fragment.
+* Use default link text from the title or `reftext` of the target.
+* Stub links that don't yet exist
+* Produce warnings if link text is unnecessary 
+
+See https://github.com/spring-io/antora-xref-extension/ for more details and usage instructions.

@@ -12,6 +12,10 @@
     "bugs": {
         "url": "https://github.com/spring-io/antora-xref-extension/issues"
     },
+    "scripts": {
+        "postpublish": "downdoc --postpublish",
+        "prepublishOnly": "downdoc --prepublish"
+    },
     "main": "lib/index.js",
     "exports": {
         ".": "./lib/index.js"

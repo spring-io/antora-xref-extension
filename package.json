@@ -15,9 +15,7 @@
     "format": "node npm/format.js packages/${npm_config_package},npm",
     "lint": "eslint \"{docs,npm}/**/*.js\" \"packages/${npm_config_package:-*}/{lib,test}/**/*.js\"",
     "test": "_mocha",
-    "version": "node npm/version.js",
-    "postpublish": "downdoc --postpublish",
-    "prepublishOnly": "downdoc --prepublish"
+    "version": "node npm/version.js"
   },
   "engines": {
     "node": ">=16.0.0"
