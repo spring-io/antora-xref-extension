@@ -664,6 +664,87 @@ describe('xref extension', () => {
       expect(loggerDestination.messages).to.be.empty()
     })
 
+    it('should allow reference in dlist items', () => {
+      const extensionConfig = {
+        logUnnecessaryLinkTextWarnings: false,
+      }
+      addFile(
+        'target.adoc',
+        heredoc`
+      = Target
+
+      [[frag]]
+      == Fragment
+      The Fragment
+      `
+      )
+      addFile(
+        'xref.adoc',
+        heredoc`
+      = Dlist
+
+      Simple::
+
+      Simple1::
+      xref:target.adoc#frag[Existing]
+
+      Simple2:: xref:target.adoc#frag[Existing]
+
+      xref:target.adoc#frag[Existing]:: Also works
+
+      // These do not work, yet :(
+      // Numbered::
+      //  . xref:target.adoc#frag[Existing]
+       
+      // 
+      // Outer::
+      //   Inner:::
+      //     xref:target.adoc#frag[Existing]
+      `
+      )
+      run(extensionConfig)
+      // console.log(loggerDestination.messages)
+      const page = contentCatalog.getPages((candidate) => candidate.path === '/xref.adoc')[0]
+      expect(loggerDestination.messages).to.be.empty()
+    })
+
+    it('should log warnings for dangling references from dlist items', () => {
+      const extensionConfig = {
+        logUnnecessaryLinkTextWarnings: false,
+      }
+      addFile(
+        'target.adoc',
+        heredoc`
+      = Target
+
+      [[frag]]
+      == Fragment
+      The Fragment
+      `
+      )
+      addFile(
+        'xref.adoc',
+        heredoc`
+      = Dlist
+
+      Simple1::
+      xref:target.adoc#dangling1[Dangling]
+
+      Simple2:: xref:target.adoc#dangling2[Dangling]
+
+      xref:target.adoc#dangling3[Dangling]:: Also works
+      `
+      )
+      run(extensionConfig)
+      const page = contentCatalog.getPages((candidate) => candidate.path === '/xref.adoc')[0]
+      expect(
+        loggerDestination.messages.length == 3 &&
+        loggerDestination.messages.every(
+          (message) => message.includes('"level":"error"') && message.includes('target fragement of xref not found: target.adoc#dangling')
+        )
+      ).to.be.true()
+    })
+
     function addFile (filename, contents) {
       contents = Buffer.from(contents)
       const mediaType = 'text/asciidoc'

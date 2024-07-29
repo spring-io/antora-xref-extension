@@ -92,21 +92,35 @@ function register ({ config }) {
   }
 
   function processNode (src, node, lookup) {
-    const context = node.getContext()
-    if (context === 'paragraph' || context === 'admonition') {
-      const lines = node.lines
-      for (let i = 0; i < lines.length; i++) {
-        lines[i] = processLine(src, node, lines[i], lookup)
+    if (Array.isArray(node)) {
+      // e.g. dlist
+      for (let i = 0; i < node.length; i++) {
+        if (node[i] !== null) {
+          processNode(src, node[i], lookup)
+        }
       }
-    } else if (context === 'table') {
-      const rows = node.getRows()
-      rows.getHead().forEach((row) => row.forEach((cell) => processNode(src, cell, lookup)))
-      rows.getBody().forEach((row) => row.forEach((cell) => processNode(src, cell, lookup)))
-      rows.getFoot().forEach((row) => row.forEach((cell) => processNode(src, cell, lookup)))
-    } else if (context === 'table_cell' || context === 'list_item') {
-      node.text = processLine(src, node, node.text, lookup)
+      return
     }
-    node.getBlocks().forEach((child) => processNode(src, child, lookup))
+
+    try {
+      const context = node.getContext()
+      if (context === 'paragraph' || context === 'admonition') {
+        const lines = node.lines
+        for (let i = 0; i < lines.length; i++) {
+          lines[i] = processLine(src, node, lines[i], lookup)
+        }
+      } else if (context === 'table') {
+        const rows = node.getRows()
+        rows.getHead().forEach((row) => row.forEach((cell) => processNode(src, cell, lookup)))
+        rows.getBody().forEach((row) => row.forEach((cell) => processNode(src, cell, lookup)))
+        rows.getFoot().forEach((row) => row.forEach((cell) => processNode(src, cell, lookup)))
+      } else if (context === 'table_cell' || context === 'list_item') {
+        node.text = processLine(src, node, node.text, lookup)
+      }
+      node.getBlocks().forEach((child) => processNode(src, child, lookup))
+    } catch (t) {
+      log(node, 'warn', 'Parse error when validating xrefs.')
+    }
   }
 
   function processLine (src, block, line, lookup) {
