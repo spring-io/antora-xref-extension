@@ -161,7 +161,6 @@ describe('xref extension', () => {
       run()
       const page = contentCatalog.getPages((candidate) => candidate.path === '/xref.adoc')[0]
       expect(page.contents.toString()).to.include('<a href="#missing">here</a>')
-      console.log(loggerDestination.messages)
       expect(
         loggerDestination.messages.some(
           (message) =>
@@ -718,25 +717,27 @@ describe('xref extension', () => {
       Simple::
 
       Simple1::
-      xref:target.adoc#frag[Existing]
+      xref:target.adoc#frag[Existing1]
 
-      Simple2:: xref:target.adoc#frag[Existing]
+      Simple2:: xref:target.adoc#frag[Existing2]
 
-      xref:target.adoc#frag[Existing]:: Also works
+      xref:target.adoc#frag[Existing3]:: Also works
 
-      // These do not work, yet :(
-      // Numbered::
-      //  . xref:target.adoc#frag[Existing]
-       
-      // 
-      // Outer::
-      //   Inner:::
-      //     xref:target.adoc#frag[Existing]
+      Numbered::
+      . xref:target.adoc#frag[Existing4]
+
+      Outer::
+        Inner:::
+          xref:target.adoc#frag[Existing5]
       `
       )
       run(extensionConfig)
-      // console.log(loggerDestination.messages)
       const page = contentCatalog.getPages((candidate) => candidate.path === '/xref.adoc')[0]
+      expect(page.contents.toString()).to.include('<a href="target.adoc#frag" class="xref page">Existing1</a>')
+      expect(page.contents.toString()).to.include('<a href="target.adoc#frag" class="xref page">Existing2</a>')
+      expect(page.contents.toString()).to.include('<a href="target.adoc#frag" class="xref page">Existing3</a>')
+      expect(page.contents.toString()).to.include('<a href="target.adoc#frag" class="xref page">Existing4</a>')
+      expect(page.contents.toString()).to.include('<a href="target.adoc#frag" class="xref page">Existing5</a>')
       expect(loggerDestination.messages).to.be.empty()
     })
 
@@ -769,10 +770,13 @@ describe('xref extension', () => {
       )
       run(extensionConfig)
       const page = contentCatalog.getPages((candidate) => candidate.path === '/xref.adoc')[0]
+      expect(page.contents.toString()).to.include('<a href="target.adoc#dangling1"')
+      expect(page.contents.toString()).to.include('<a href="target.adoc#dangling2"')
+      expect(page.contents.toString()).to.include('<a href="target.adoc#dangling3"')
       expect(
-        loggerDestination.messages.length == 3 &&
+        loggerDestination.messages.length === 3 &&
         loggerDestination.messages.every(
-          (message) => message.includes('"level":"error"') && message.includes('target fragement of xref not found: target.adoc#dangling')
+          (message) => message.includes('"level":"error"') && message.includes('target fragment of xref not found: target.adoc#dangling')
         )
       ).to.be.true()
     })

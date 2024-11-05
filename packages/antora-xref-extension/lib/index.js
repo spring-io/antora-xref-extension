@@ -92,17 +92,11 @@ function register ({ config }) {
   }
 
   function processNode (src, node, lookup) {
-    if (Array.isArray(node)) {
-      // e.g. dlist
-      for (let i = 0; i < node.length; i++) {
-        if (node[i] !== null) {
-          processNode(src, node[i], lookup)
-        }
-      }
-      return
-    }
-
     try {
+      if (!node.getContext && Array.isArray(node)) {
+        node.forEach((element) => processNode(src, element, lookup))
+        return
+      }
       const context = node.getContext()
       if (context === 'paragraph' || context === 'admonition') {
         const lines = node.lines
@@ -114,12 +108,15 @@ function register ({ config }) {
         rows.getHead().forEach((row) => row.forEach((cell) => processNode(src, cell, lookup)))
         rows.getBody().forEach((row) => row.forEach((cell) => processNode(src, cell, lookup)))
         rows.getFoot().forEach((row) => row.forEach((cell) => processNode(src, cell, lookup)))
-      } else if (context === 'table_cell' || context === 'list_item') {
+      } else if ((context === 'table_cell' || context === 'list_item') && typeof node.text === 'string') {
         node.text = processLine(src, node, node.text, lookup)
+      } else if (context === 'dlist') {
+        node.getItems().forEach((item) => processNode(src, item, lookup))
+        return
       }
       node.getBlocks().forEach((child) => processNode(src, child, lookup))
-    } catch (t) {
-      log(node, 'warn', 'Parse error when validating xrefs.')
+    } catch (ex) {
+      log(node, 'warn', 'Parse error when validating xrefs (' + ex.message + ')')
     }
   }
 
