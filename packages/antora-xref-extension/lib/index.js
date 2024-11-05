@@ -126,7 +126,7 @@ function register ({ config }) {
         if (!asciiDocRefs) {
           return match
         }
-        log(block, 'error', `target fragement of xref not found: ${resourceId}#${fragment}`)
+        log(block, 'error', `target fragment of xref not found: ${resourceId}#${fragment}`)
         return match
       }
       if (config?.logUnnecessaryLinkTextWarnings && linkText === target.reftext) {

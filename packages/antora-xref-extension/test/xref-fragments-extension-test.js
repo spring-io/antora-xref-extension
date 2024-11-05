@@ -134,7 +134,7 @@ describe('xref extension', () => {
         loggerDestination.messages.some(
           (message) =>
             message.includes('"level":"error"') &&
-            message.includes('target fragement of xref not found: target.adoc#missing')
+            message.includes('target fragment of xref not found: target.adoc#missing')
         )
       ).to.be.true()
     })
@@ -166,7 +166,7 @@ describe('xref extension', () => {
         loggerDestination.messages.some(
           (message) =>
             message.includes('"level":"error"') &&
-            message.includes('target fragement of xref not found: #missing')
+            message.includes('target fragment of xref not found: #missing')
         )
       ).to.be.true()
     })
