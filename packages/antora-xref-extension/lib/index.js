@@ -92,21 +92,32 @@ function register ({ config }) {
   }
 
   function processNode (src, node, lookup) {
-    const context = node.getContext()
-    if (context === 'paragraph' || context === 'admonition') {
-      const lines = node.lines
-      for (let i = 0; i < lines.length; i++) {
-        lines[i] = processLine(src, node, lines[i], lookup)
+    try {
+      if (!node.getContext && Array.isArray(node)) {
+        node.forEach((element) => processNode(src, element, lookup))
+        return
       }
-    } else if (context === 'table') {
-      const rows = node.getRows()
-      rows.getHead().forEach((row) => row.forEach((cell) => processNode(src, cell, lookup)))
-      rows.getBody().forEach((row) => row.forEach((cell) => processNode(src, cell, lookup)))
-      rows.getFoot().forEach((row) => row.forEach((cell) => processNode(src, cell, lookup)))
-    } else if (context === 'table_cell' || context === 'list_item') {
-      node.text = processLine(src, node, node.text, lookup)
+      const context = node.getContext()
+      if (context === 'paragraph' || context === 'admonition') {
+        const lines = node.lines
+        for (let i = 0; i < lines.length; i++) {
+          lines[i] = processLine(src, node, lines[i], lookup)
+        }
+      } else if (context === 'table') {
+        const rows = node.getRows()
+        rows.getHead().forEach((row) => row.forEach((cell) => processNode(src, cell, lookup)))
+        rows.getBody().forEach((row) => row.forEach((cell) => processNode(src, cell, lookup)))
+        rows.getFoot().forEach((row) => row.forEach((cell) => processNode(src, cell, lookup)))
+      } else if ((context === 'table_cell' || context === 'list_item') && typeof node.text === 'string') {
+        node.text = processLine(src, node, node.text, lookup)
+      } else if (context === 'dlist') {
+        node.getItems().forEach((item) => processNode(src, item, lookup))
+        return
+      }
+      node.getBlocks().forEach((child) => processNode(src, child, lookup))
+    } catch (ex) {
+      log(node, 'warn', 'Parse error when validating xrefs (' + ex.message + ')')
     }
-    node.getBlocks().forEach((child) => processNode(src, child, lookup))
   }
 
   function processLine (src, block, line, lookup) {

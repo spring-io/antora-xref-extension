@@ -161,7 +161,6 @@ describe('xref extension', () => {
       run()
       const page = contentCatalog.getPages((candidate) => candidate.path === '/xref.adoc')[0]
       expect(page.contents.toString()).to.include('<a href="#missing">here</a>')
-      console.log(loggerDestination.messages)
       expect(
         loggerDestination.messages.some(
           (message) =>
@@ -694,6 +693,92 @@ describe('xref extension', () => {
       const page = contentCatalog.getPages((candidate) => candidate.path === '/xref.adoc')[0]
       expect(page.contents.toString()).to.include('<a href="target.adoc#frag" class="xref page">Fragment</a>')
       expect(loggerDestination.messages).to.be.empty()
+    })
+
+    it('should allow reference in dlist items', () => {
+      const extensionConfig = {
+        logUnnecessaryLinkTextWarnings: false,
+      }
+      addFile(
+        'target.adoc',
+        heredoc`
+      = Target
+
+      [[frag]]
+      == Fragment
+      The Fragment
+      `
+      )
+      addFile(
+        'xref.adoc',
+        heredoc`
+      = Dlist
+
+      Simple::
+
+      Simple1::
+      xref:target.adoc#frag[Existing1]
+
+      Simple2:: xref:target.adoc#frag[Existing2]
+
+      xref:target.adoc#frag[Existing3]:: Also works
+
+      Numbered::
+      . xref:target.adoc#frag[Existing4]
+
+      Outer::
+        Inner:::
+          xref:target.adoc#frag[Existing5]
+      `
+      )
+      run(extensionConfig)
+      const page = contentCatalog.getPages((candidate) => candidate.path === '/xref.adoc')[0]
+      expect(page.contents.toString()).to.include('<a href="target.adoc#frag" class="xref page">Existing1</a>')
+      expect(page.contents.toString()).to.include('<a href="target.adoc#frag" class="xref page">Existing2</a>')
+      expect(page.contents.toString()).to.include('<a href="target.adoc#frag" class="xref page">Existing3</a>')
+      expect(page.contents.toString()).to.include('<a href="target.adoc#frag" class="xref page">Existing4</a>')
+      expect(page.contents.toString()).to.include('<a href="target.adoc#frag" class="xref page">Existing5</a>')
+      expect(loggerDestination.messages).to.be.empty()
+    })
+
+    it('should log warnings for dangling references from dlist items', () => {
+      const extensionConfig = {
+        logUnnecessaryLinkTextWarnings: false,
+      }
+      addFile(
+        'target.adoc',
+        heredoc`
+      = Target
+
+      [[frag]]
+      == Fragment
+      The Fragment
+      `
+      )
+      addFile(
+        'xref.adoc',
+        heredoc`
+      = Dlist
+
+      Simple1::
+      xref:target.adoc#dangling1[Dangling]
+
+      Simple2:: xref:target.adoc#dangling2[Dangling]
+
+      xref:target.adoc#dangling3[Dangling]:: Also works
+      `
+      )
+      run(extensionConfig)
+      const page = contentCatalog.getPages((candidate) => candidate.path === '/xref.adoc')[0]
+      expect(page.contents.toString()).to.include('<a href="target.adoc#dangling1"')
+      expect(page.contents.toString()).to.include('<a href="target.adoc#dangling2"')
+      expect(page.contents.toString()).to.include('<a href="target.adoc#dangling3"')
+      expect(
+        loggerDestination.messages.length === 3 &&
+        loggerDestination.messages.every(
+          (message) => message.includes('"level":"error"') && message.includes('target fragment of xref not found: target.adoc#dangling')
+        )
+      ).to.be.true()
     })
 
     function addFile (filename, contents) {
