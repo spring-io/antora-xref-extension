@@ -40,7 +40,7 @@ function register ({ config }) {
     if (disableProcessing) return
     const { file, contentCatalog } = context
     const lookup = (resourceId) => {
-      const resource = contentCatalog.resolveResource(resourceId, file.src)
+      const resource = (resourceId !== '') ? contentCatalog.resolveResource(resourceId, file.src) : file
       if (!resource || (resource.mediaType !== 'text/asciidoc' && !resource.src.contents)) {
         return null
       }

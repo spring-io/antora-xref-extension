@@ -139,6 +139,38 @@ describe('xref extension', () => {
       ).to.be.true()
     })
 
+    it('should warn on missing fragment in same page', () => {
+      addFile(
+        'target.adoc',
+        heredoc`
+      = Target
+
+      [[frag]]
+      == Fragment
+      The Fragment
+      `
+      )
+      addFile(
+        'xref.adoc',
+        heredoc`
+      = Xref
+
+      Go read xref:#missing[here]
+      `
+      )
+      run()
+      const page = contentCatalog.getPages((candidate) => candidate.path === '/xref.adoc')[0]
+      expect(page.contents.toString()).to.include('<a href="#missing">here</a>')
+      console.log(loggerDestination.messages)
+      expect(
+        loggerDestination.messages.some(
+          (message) =>
+            message.includes('"level":"error"') &&
+            message.includes('target fragement of xref not found: #missing')
+        )
+      ).to.be.true()
+    })
+
     it('should not warn on matching fragment', () => {
       addFile(
         'target.adoc',
