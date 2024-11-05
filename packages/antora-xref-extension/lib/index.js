@@ -48,7 +48,10 @@ function register ({ config }) {
         resource.src.asciiDocRefs = loadAsciiDocRefs((resource) => {
           if (file.path === resource.path) return doc
           const asciiDocConfigForFile = getAsciiDocConfigForFile(contentCatalog, siteAsciiDocConfig, file)
-          return loadAsciiDoc(resource, contentCatalog, asciiDocConfigForFile)
+          const loggerContext = doc.getLogger().context
+          const loaded = loadAsciiDoc(resource, contentCatalog, asciiDocConfigForFile)
+          doc.getLogger().context = loggerContext
+          return loaded
         }, resource)
       }
       return resource.src.asciiDocRefs
