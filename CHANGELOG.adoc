@@ -5,6 +5,10 @@ For a detailed view of what's changed, refer to the {url-repo}/commits[commit hi
 
 
 
+== 1.0.0-alpha.4 (2024-11-05)
+
+_No changes since previous release._
+
 == 1.0.0-alpha.3 (2024-03-19)
 
 _No changes since previous release._
