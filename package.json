@@ -18,7 +18,7 @@
     "version": "node npm/version.js"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=18.0.0"
   },
   "devDependencies": {
     "eslint": "~8.27",
@@ -44,9 +44,10 @@
     "reportDir": "reports"
   },
   "dependencies": {
-    "@antora/asciidoc-loader": "^3.1.7",
-    "@antora/content-classifier": "^3.1.7",
-    "@antora/document-converter": "^3.1.7",
+    "@antora/logger": "3.2.0-alpha.10",
+    "@antora/asciidoc-loader": "3.2.0-alpha.10",
+    "@antora/content-classifier": "3.2.0-alpha.10",
+    "@antora/document-converter": "3.2.0-alpha.10",
     "downdoc": "^1.0.2-stable",
     "i": "^0.3.7",
     "npm": "^10.5.0"
