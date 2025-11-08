@@ -164,8 +164,7 @@ describe('xref extension', () => {
       expect(
         loggerDestination.messages.some(
           (message) =>
-            message.includes('"level":"error"') &&
-            message.includes('target fragment of xref not found: #missing')
+            message.includes('"level":"error"') && message.includes('target fragment of xref not found: #missing')
         )
       ).to.be.true()
     })
@@ -775,9 +774,11 @@ describe('xref extension', () => {
       expect(page.contents.toString()).to.include('<a href="target.adoc#dangling3"')
       expect(
         loggerDestination.messages.length === 3 &&
-        loggerDestination.messages.every(
-          (message) => message.includes('"level":"error"') && message.includes('target fragment of xref not found: target.adoc#dangling')
-        )
+          loggerDestination.messages.every(
+            (message) =>
+              message.includes('"level":"error"') &&
+              message.includes('target fragment of xref not found: target.adoc#dangling')
+          )
       ).to.be.true()
     })
 
