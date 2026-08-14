@@ -782,6 +782,67 @@ describe('xref extension', () => {
       ).to.be.true()
     })
 
+    it('should allow dlist term with no description', () => {
+      addFile(
+        'target.adoc',
+        heredoc`
+      = Target
+
+      [[frag]]
+      == Fragment
+      The Fragment
+      `
+      )
+      addFile(
+        'xref.adoc',
+        heredoc`
+      = Dlist
+
+      Go read xref:target.adoc#frag[Existing]
+
+      Term::
+      `
+      )
+      run()
+      const page = contentCatalog.getPages((candidate) => candidate.path === '/xref.adoc')[0]
+      expect(page.contents.toString()).to.include('<a href="target.adoc#frag" class="xref page">Existing</a>')
+      expect(loggerDestination.messages).to.be.empty()
+    })
+
+    it('should allow dlist term whose description is a sibling block', () => {
+      addFile(
+        'target.adoc',
+        heredoc`
+      = Target
+
+      [[frag]]
+      == Fragment
+      The Fragment
+      `
+      )
+      addFile(
+        'xref.adoc',
+        heredoc`
+      = Dlist
+
+      [tabs]
+      ====
+      Java::
+      [source,java]
+      ----
+      int x = 1;
+      ----
+      ====
+
+      Go read xref:target.adoc#frag[Existing]
+      `
+      )
+      run()
+      const page = contentCatalog.getPages((candidate) => candidate.path === '/xref.adoc')[0]
+      expect(page.contents.toString()).to.include('<a href="target.adoc#frag" class="xref page">Existing</a>')
+      expect(loggerDestination.messages).to.be.empty()
+    })
+
     function addFile (filename, contents) {
       contents = Buffer.from(contents)
       const mediaType = 'text/asciidoc'
