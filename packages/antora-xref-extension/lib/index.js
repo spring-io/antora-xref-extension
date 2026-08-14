@@ -7,6 +7,7 @@ function register ({ config }) {
   const stubs = config?.stub && config.stub.map((stub) => new RegExp(stub))
   let disableProcessing
   let componentVersionAsciiDocConfigs
+  let docLogger
 
   this.once('contextStarted', () => {
     const { resolveAsciiDocConfig: resolveAsciiDocConfigDelegate, loadAsciiDoc } = this.getFunctions()
@@ -39,6 +40,7 @@ function register ({ config }) {
   function process (loadAsciiDoc, context, siteAsciiDocConfig, doc) {
     if (disableProcessing) return
     const { file, contentCatalog } = context
+    docLogger = doc.getLogger()
     const lookup = (resourceId) => {
       const resource = resourceId !== '' ? contentCatalog.resolveResource(resourceId, file.src) : file
       if (!resource || (resource.mediaType !== 'text/asciidoc' && !resource.src.contents)) {
@@ -96,8 +98,10 @@ function register ({ config }) {
 
   function processNode (src, node, lookup) {
     try {
-      if (!node.getContext && Array.isArray(node)) {
-        node.forEach((element) => processNode(src, element, lookup))
+      if (!node?.getContext) {
+        // a node without a context is either a group of nodes (such as the terms of a dlist item) or, in the case of a
+        // dlist term with no description, the Opal nil that Asciidoctor uses in place of the missing description
+        if (Array.isArray(node)) node.forEach((element) => processNode(src, element, lookup))
         return
       }
       const context = node.getContext()
@@ -153,6 +157,9 @@ function register ({ config }) {
   }
 
   function log (node, severity, message) {
+    // a node that cannot log against itself is reported against the document instead; logging must never throw here,
+    // since this is the path that reports the original failure
+    if (!node?.getLogger) return docLogger[severity](message)
     node.getLogger()[severity](node.createLogMessage(message, { source_location: node.getSourceLocation() }))
   }
 }
